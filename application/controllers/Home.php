@@ -10,9 +10,14 @@ class Home extends CI_Controller {
 		date_default_timezone_set('America/Sao_Paulo');
 	}
 
-	public function index()
-	{
+	public function index(){
 		redirect('login');
+	}
+
+	function logout(){
+		$this->session->unset_userdata('logged_in');
+		session_destroy();
+		redirect('home','refre');
 	}
 
 	function dashboard(){
@@ -30,8 +35,49 @@ class Home extends CI_Controller {
 			redirect ( 'login', 'refresh' );
 		}
 	}
-	/*Auxiliares (Ajax)*/
-	function buscaUsuarioPerfil(){
+
+	/*Usuários*/
+	function cadastrausuario() {
+		if ($this->session->userdata ( 'logged_in' )) { // VALIDA USUÁRIO LOGADO
+			$this->load->model ( 'model_perfil' );
+			$resultadoPerfil = $this->model_perfil->buscaPerfil ();
+			$dados ['resultadoPerfil'] = $resultadoPerfil;
+			
+			if ($this->input->post ()) {
+				if ((! empty ( trim ( $this->input->post ( 'nome' ) ) )) || (! empty ( trim ( $this->input->post ( 'login' ) ) )) || (! empty ( trim ( $this->input->post ( 'email' ) ) )) || (! empty ( trim ( $this->input->post ( 'senha' ) ) )) || (! empty ( trim ( $this->input->post ( 'perfilid' ) ) ))) {
+					
+					$dadosusuario ['nome'] = $this->input->post ( 'nome' );
+					$dadosusuario ['login'] = $this->input->post ( 'login' );
+					$dadosusuario ['email'] = $this->input->post ( 'email' );
+					$dadosusuario ['senha'] = $this->input->post ( 'senha' );
+					$dadosusuario ['datacadastro'] = date ( 'Y-m-d H:m:s' );
+					$dadosusuario ['perfilid'] = $this->input->post ( 'perfilid' );
+					$dadosusuario ['status'] = 1;
+					
+					$this->load->model ( 'model_usuario' );
+					$resultadocadastrousuario = $this->model_usuario->cadastrausuario ( $dadosusuario );
+					
+					if ($resultadocadastrousuario) {
+						$dados ['tela'] = 'view_dashboard';
+					} else {
+						$dados ['msg'] = 'Ocorreu um erro ao cadastrar o usuario! Atualize a página e tente novamente';
+						$dados ['tela'] = 'usuarios/view_cadastrousuario';
+					}
+					$this->load->view ( 'view_home', $dados );
+				} else {
+					$dados ['msg'] = 'Dados Imcompletos! Preencha os dados e tente novamente';
+					$dados ['tela'] = 'usuarios/view_cadastrousuario';
+					$this->load->view ( 'view_home', $dados );
+				}
+			} else {
+				$dados ['tela'] = 'usuarios/view_cadastrousuario';
+				$this->load->view ( 'view_home', $dados );
+			}
+		}
+	}
+
+		/*Auxiliares (Ajax)*/
+		function buscaUsuarioPerfil(){
 		if ($this->session->userdata ( 'logged_in' )) { // VALIDA USUÁRIO LOGADO
 			$option = "";
 			

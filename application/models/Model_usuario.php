@@ -12,7 +12,7 @@ class Model_usuario extends CI_Model{
 		//Verificar se o usuário está ativo
 		$this->db->limit(1);
 		$query = $this->db->get();
-			return $query->result();
+		return $query->result();
 	}
 
 	function buscaUsuarioPerfil($perfil){
@@ -28,4 +28,23 @@ class Model_usuario extends CI_Model{
 			return false;
 		}
 	}
+
+	function cadastrausuario($dados = NULL) {
+		if ($dados !== NULL) {
+			extract ( $dados );
+			$this->db->insert ( 'usuarios', array (
+					'nome' => $dados ['nome'],
+					'login' => $dados ['login'],
+					'email' => $dados ['email'],
+					'senha' => $dados ['senha'],
+					'datacadastro' => $dados ['datacadastro'],
+					'perfilid' => $dados ['perfilid'],
+					'status' => $dados ['status'] 
+			) );
+			return true;
+		} else {
+			return false;
+		}
+	}
 }
+
