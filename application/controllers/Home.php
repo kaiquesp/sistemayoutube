@@ -44,7 +44,12 @@ class Home extends CI_Controller {
 			$dados ['resultadoPerfil'] = $resultadoPerfil;
 			
 			if ($this->input->post ()) {
-				if ((! empty ( trim ( $this->input->post ( 'nome' ) ) )) || (! empty ( trim ( $this->input->post ( 'login' ) ) )) || (! empty ( trim ( $this->input->post ( 'email' ) ) )) || (! empty ( trim ( $this->input->post ( 'senha' ) ) )) || (! empty ( trim ( $this->input->post ( 'perfilid' ) ) ))) {
+				if ((empty(trim($this->input->post('nome')))) || (empty(trim($this->input->post('login')))) || (empty(trim($this->input->post('email')))) || (empty(trim($this->input->post('senha')))) || (empty(trim($this->input->post('perfilid'))))) {
+					
+					$dados ['msg'] = 'Dados Imcompletos! Preencha os dados e tente novamente';
+					$dados ['tela'] = 'usuarios/view_cadastrousuario';
+					$this->load->view ( 'view_home', $dados );
+				} else {
 					
 					$dadosusuario ['nome'] = $this->input->post ( 'nome' );
 					$dadosusuario ['login'] = $this->input->post ( 'login' );
@@ -56,17 +61,15 @@ class Home extends CI_Controller {
 					
 					$this->load->model ( 'model_usuario' );
 					$resultadocadastrousuario = $this->model_usuario->cadastrausuario ( $dadosusuario );
-					
+
+				
 					if ($resultadocadastrousuario) {
-						$dados ['tela'] = 'view_dashboard';
+						$dados ['msg'] = 'Usuário cadastrado com sucesso!';
+						$dados ['tela'] = 'usuarios/view_cadastrousuario';
 					} else {
 						$dados ['msg'] = 'Ocorreu um erro ao cadastrar o usuario! Atualize a página e tente novamente';
 						$dados ['tela'] = 'usuarios/view_cadastrousuario';
 					}
-					$this->load->view ( 'view_home', $dados );
-				} else {
-					$dados ['msg'] = 'Dados Imcompletos! Preencha os dados e tente novamente';
-					$dados ['tela'] = 'usuarios/view_cadastrousuario';
 					$this->load->view ( 'view_home', $dados );
 				}
 			} else {
