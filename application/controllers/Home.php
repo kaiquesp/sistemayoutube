@@ -61,7 +61,6 @@ class Home extends CI_Controller {
 					
 					$this->load->model ( 'model_usuario' );
 					$resultadocadastrousuario = $this->model_usuario->cadastrausuario ( $dadosusuario );
-
 				
 					if ($resultadocadastrousuario) {
 						$dados ['msg'] = 'Usuário cadastrado com sucesso!';
